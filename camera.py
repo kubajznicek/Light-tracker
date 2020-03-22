@@ -3,41 +3,47 @@
 import cv2
 import numpy as np
 import random as rng
+import time
+
+
+SVETLO = 240*3 # Spodni limit pro rozpoznani svetylka R+G+B
+
 
 rng.seed(12345)
+OKNO = 'Kubovo kreslici svetelko'
+MAX=768
+cv2.namedWindow(OKNO, cv2.WND_PROP_FULLSCREEN)          
+#cv2.setWindowProperty(OKNO, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)  # Cela obrazovka
 cap = cv2.VideoCapture(0)
-cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.25)
-cap.set(cv2.CAP_PROP_EXPOSURE, 10.0)
-print (cap.get(cv2.CAP_PROP_EXPOSURE ))
+_, _ = cap.read()
+cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.25)  # nefunguje
+cap.set(cv2.CAP_PROP_EXPOSURE, -1.0)  # nefunguje
+cap.set(cv2.CAP_PROP_BRIGHTNESS, 0)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+cam_x = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+cam_y = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+print("Rozliseni kamery: {}x{}".format(cam_x, cam_y))
+print("Expozice: {}".format(cap.get(cv2.CAP_PROP_EXPOSURE)))
+page = np.zeros((cam_y, cam_x, 3), dtype=np.uint8)
 threshold = 100
-_, res = cap.read()
+time.sleep(1.0)
 
 while(1):
 
-    # Take each frame
+    # Take each frame from camera in BGR
     _, frame = cap.read()
 
-    # Convert BGR to HSV
-    #hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    lower = np.array([SVETLO])
+    upper = np.array([MAX])
+    frame = np.fliplr(frame) # zrcadli, aby to nebylo stranove prevracene
+    scitanec = np.sum(frame, axis=2, keepdims=True) # secti R+G+B 
+    mask = cv2.inRange(scitanec, lower, upper)
+    # print("Nejsvetlejsi hodnota: {}".format(np.max(mask)))
 
-    # define range of blue color in HSV
-    lower = np.array([254,254,254])
-    upper = np.array([255,255,255])
-    lower2 = np.array([2])
-    upper2 = np.array([255])
-
-    # Threshold the HSV image to get only blue colors
-    mask = cv2.inRange(frame, lower, upper)
-    mask = cv2.blur(mask, (10, 10))
-    mask = cv2.inRange(mask, lower2, upper2)
-
-    # Detect edges using Canny
-    canny_output = cv2.Canny(mask, threshold, threshold * 2)     
-
-    # Find contours
+    # Najdi kontury
+    canny_output = cv2.Canny(mask, threshold, MAX+1)     
     contours, _ = cv2.findContours(canny_output, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
-    # Approximate contours to polygons + get bounding rects and circles
     contours_poly = [None]*len(contours)
     boundRect = [None]*len(contours)
     centers = [None]*len(contours)
@@ -57,20 +63,18 @@ while(1):
     
     bod =  (int(c[0]), int(c[1]))  
 
-    # Draw polygonal contour + bonding rects + circles
-    cv2.line(res,bod,bod,(255,0,0),5)
-    #cv2.circle(res, (int(c[0]), int(c[1])), 3, (200, 199, 9), CV_FILLED, 8,0)
+    # Kresli caru
+    cv2.line(page,bod,bod,(255,0,0),5)
 
-    # Bitwise-AND mask and original image
-    res = cv2.bitwise_and(frame,frame, mask= mask)
+    # Prolni kameru a kresbu
+    # res = cv2.bitwise_and(page, frame)
+    res = cv2.addWeighted(frame, 0.3, page, 0.7, 0)
 
-    
-
-    cv2.imshow('frame',frame)
-    cv2.imshow('mask',mask)
-    cv2.imshow('res',res)
+    #cv2.imshow('frame',frame)
+    #cv2.imshow('mask',mask)
+    cv2.imshow(OKNO,res)
     k = cv2.waitKey(5) & 0xFF
-    if k == 27:
+    if k == 27 or k == ord('q'):
         break
 
 
