@@ -16,11 +16,11 @@ cv2.namedWindow(OKNO, cv2.WND_PROP_FULLSCREEN)
 #cv2.setWindowProperty(OKNO, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)  # Cela obrazovka
 cap = cv2.VideoCapture(0)
 _, _ = cap.read()
-cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.25)  # nefunguje
-cap.set(cv2.CAP_PROP_EXPOSURE, -1.0)  # nefunguje
+cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 1)  # funguje
+cap.set(cv2.CAP_PROP_EXPOSURE, 512)  # funguje
 cap.set(cv2.CAP_PROP_BRIGHTNESS, 0)
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 cam_x = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 cam_y = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 print("Rozliseni kamery: {}x{}".format(cam_x, cam_y))
@@ -39,8 +39,8 @@ while(1):
     frame = np.fliplr(frame) # zrcadli, aby to nebylo stranove prevracene
     scitanec = np.sum(frame, axis=2, keepdims=True) # secti R+G+B 
     mask = cv2.inRange(scitanec, lower, upper)
-    # print("Nejsvetlejsi hodnota: {}".format(np.max(mask)))
-
+    print("Nejsvetlejsi hodnota: {}".format(np.max(scitanec)))
+    #print("Expozice: {}".format(cap.get(cv2.CAP_PROP_EXPOSURE)))
     # Najdi kontury
     canny_output = cv2.Canny(mask, threshold, MAX+1)     
     contours, _ = cv2.findContours(canny_output, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
