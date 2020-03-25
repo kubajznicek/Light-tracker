@@ -66,6 +66,12 @@ while(1):
     # Kresli caru
     cv2.line(page,bod,bod,(255,0,0),5)
 
+    if predchozi = None
+      pass
+      else:
+        cv2.line(page, predchozi, bod)
+        bod = predchozi
+
     # Prolni kameru a kresbu
     # res = cv2.bitwise_and(page, frame)
     res = cv2.addWeighted(frame, 0.3, page, 0.7, 0)
