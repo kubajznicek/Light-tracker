@@ -13,7 +13,7 @@ rng.seed(12345)
 OKNO = 'Kubovo kreslici svetelko'
 MAX=768
 cv2.namedWindow(OKNO, cv2.WND_PROP_FULLSCREEN)          
-#cv2.setWindowProperty(OKNO, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)  # Cela obrazovka
+cv2.setWindowProperty(OKNO, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)  # Cela obrazovka
 cap = cv2.VideoCapture(0)
 _, _ = cap.read()
 cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 1)  # funguje
@@ -29,10 +29,12 @@ page = np.zeros((cam_y, cam_x, 3), dtype=np.uint8)
 threshold = 100
 time.sleep(1.0)
 
+predchozi = None
+
 while(1):
 
     # Take each frame from camera in BGR
-    _, frame = cap.read()
+    err, frame = cap.read()
 
     lower = np.array([SVETLO])
     upper = np.array([MAX])
@@ -62,15 +64,17 @@ while(1):
             c = centers[i]
     
     bod =  (int(c[0]), int(c[1]))  
+    if bod == (0,0):
+        predchozi = None
+    else:
+        # Kresli caru
+        cv2.line(page,bod,bod,(255,0,0),2)
 
-    # Kresli caru
-    cv2.line(page,bod,bod,(255,0,0),5)
-
-    if predchozi = None
-      pass
-      else:
-        cv2.line(page, predchozi, bod)
-        bod = predchozi
+        if predchozi == None:
+            predchozi = bod
+        else:
+            cv2.line(page, predchozi, bod,(255,0,0),2)
+            predchozi = bod
 
     # Prolni kameru a kresbu
     # res = cv2.bitwise_and(page, frame)
@@ -79,6 +83,7 @@ while(1):
     #cv2.imshow('frame',frame)
     #cv2.imshow('mask',mask)
     cv2.imshow(OKNO,res)
+
     k = cv2.waitKey(5) & 0xFF
     if k == 27 or k == ord('q'):
         break
