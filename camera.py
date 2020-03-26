@@ -8,6 +8,11 @@ import time
 
 SVETLO = 240*3 # Spodni limit pro rozpoznani svetylka R+G+B
 
+tloustka = 2
+cervna = (0,0,255)
+modra = (255,0,0)
+zelena = (0,255,0)
+
 
 rng.seed(12345)
 OKNO = 'Kubovo kreslici svetelko'
@@ -68,12 +73,12 @@ while(1):
         predchozi = None
     else:
         # Kresli caru
-        cv2.line(page,bod,bod,(255,0,0),2)
+        cv2.line(page,bod,bod,(modra),tloustka)
 
         if predchozi == None:
             predchozi = bod
         else:
-            cv2.line(page, predchozi, bod,(255,0,0),2)
+            cv2.line(page, predchozi, bod,(modra),tloustka)
             predchozi = bod
 
     # Prolni kameru a kresbu
@@ -87,8 +92,11 @@ while(1):
     k = cv2.waitKey(5) & 0xFF
     if k == 27 or k == ord('q'):
         break
-
-
+    if k == ord('s'):
+        cv2.imwrite("../../Desktop/Image.jpg", page)
+        #cv2.imwrite("kresleni.png", page, compression_params)
+        #cv2.imwrite(home/kuba/projekt/kresleni/kresleni.png)
+        # cv2.SaveImage(kresleni, page)
 cv2.destroyAllWindows()
 
 
