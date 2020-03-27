@@ -101,6 +101,14 @@ while(1):
         barva = modra
     if k == ord('g'):
         barva = zelena
+    if k == ord('2'):
+        tloustka = 2
+    if k == ord('5'):
+        tloustka = 5
+    if k == ord('0'):
+        tloustka = 10
+    if k == ord('c'):
+        page = np.zeros((cam_y, cam_x, 3), dtype=np.uint8)
 cv2.destroyAllWindows()
 
 
