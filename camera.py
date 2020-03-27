@@ -12,7 +12,7 @@ tloustka = 2
 cervna = (0,0,255)
 modra = (255,0,0)
 zelena = (0,255,0)
-
+barva = modra
 
 rng.seed(12345)
 OKNO = 'Kubovo kreslici svetelko'
@@ -73,12 +73,12 @@ while(1):
         predchozi = None
     else:
         # Kresli caru
-        cv2.line(page,bod,bod,(modra),tloustka)
+        cv2.line(page,bod,bod,(barva),tloustka)
 
         if predchozi == None:
             predchozi = bod
         else:
-            cv2.line(page, predchozi, bod,(modra),tloustka)
+            cv2.line(page, predchozi, bod,(barva),tloustka)
             predchozi = bod
 
     # Prolni kameru a kresbu
@@ -94,9 +94,13 @@ while(1):
         break
     if k == ord('s'):
         cv2.imwrite("../../Desktop/Image.jpg", page)
-        #cv2.imwrite("kresleni.png", page, compression_params)
-        #cv2.imwrite(home/kuba/projekt/kresleni/kresleni.png)
-        # cv2.SaveImage(kresleni, page)
+    #if k == ord('c'):
+    if k == ord('r'):
+        barva = cervna
+    if k == ord('b'):
+        barva = modra
+    if k == ord('g'):
+        barva = zelena
 cv2.destroyAllWindows()
 
 
