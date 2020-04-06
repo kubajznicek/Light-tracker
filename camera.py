@@ -1,4 +1,6 @@
 # source bin/activate
+#  v4l2-ctl -d /dev/video0 --set-ctrl=exposure_auto=3
+
 
 import cv2
 import numpy as np
@@ -18,7 +20,30 @@ def menuAkce (bod,barva,tloustka):
       return bila,tloustka
     if bod [1] < 220:
       return cerna,tloustka+3
+    if bod [1] > 420:
+      return barva,10
+    if bod [1] < 420:
+      if bod [1] > 375:
+        return barva,5
+    if bod [1] < 375:
+      if bod[1] > 325:
+        return barva,2
     return barva,tloustka
+
+def renderMenu():
+    menu[:] = bila
+    vyska = 30
+    zacateky = 10
+    mezera = 10
+    odstup = 40
+    odstup2 = 5
+    for idx,b in enumerate([cervena,modra,zelena,bila,cerna]):
+        cv2.rectangle(menu, (10,zacateky+odstup*idx),(40,odstup*(idx+1)),b,-1)
+        cv2.rectangle(menu, (10,zacateky+odstup*idx),(40,odstup*(idx+1)),cerna,1)
+
+    for idx,c in enumerate([10,5,2]):
+        cv2.line(menu, (10,450-odstup*idx),(40,450-odstup*idx),barva,thickness=c)
+
 
 SVETLO = 760 # Spodni limit pro rozpoznani svetylka R+G+B
 
@@ -50,14 +75,8 @@ page = np.zeros((cam_y, cam_x, 3), dtype=np.uint8)
 
 
 menu = np.zeros((cam_y, 50, 3), dtype=np.uint8)
-menu[:] = bila
-vyska = 30
-zacateky = 10
-mezera = 10
-odstup = 40
-for idx,b in enumerate([cervena,modra,zelena,bila,cerna]):
-    cv2.rectangle(menu, (10,zacateky+odstup*idx),(40,odstup*(idx+1)),b,-1)
-    cv2.rectangle(menu, (10,zacateky+odstup*idx),(40,odstup*(idx+1)),cerna,1)
+renderMenu ()
+
 
 threshold = 100
 time.sleep(1.0)
