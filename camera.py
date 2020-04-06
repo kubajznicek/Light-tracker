@@ -92,6 +92,7 @@ time.sleep(1.0)
 # cv2.rectangle(page,(0,0), (50,480), bila, thickness=49)
 # cv2.line(page,(50, 0),(50, 250),(255, 255, 255),100)
 predchozi = None
+scitanecPredchozi = None
 
 while(1):
 
@@ -101,9 +102,12 @@ while(1):
     lower = np.array([SVETLO])
     upper = np.array([MAX])
     frame = np.fliplr(frame) # zrcadli, aby to nebylo stranove prevracene
-    scitanec = np.sum(frame, axis=2, keepdims=True) # secti R+G+B 
-    mask = cv2.inRange(scitanec, lower, upper)
-    print("Nejsvetlejsi hodnota: {}".format(np.max(scitanec)))
+    scitanec = np.sum(frame, axis=2, keepdims=True) # secti R+G+B
+    if scitanecPredchozi != None:
+        odcitanec = cv2.absdiff(scitanecPredchozi, scitanec)
+    scitanecPredchozi = scitanec
+    mask = cv2.inRange(odcitanec, lower, upper)
+    print("Nejsvetlejsi hodnota: {}".format(np.max(odcitanec)))
     #print("Expozice: {}".format(cap.get(cv2.CAP_PROP_EXPOSURE)))
     # Najdi kontury
     canny_output = cv2.Canny(mask, threshold, MAX+1)     
