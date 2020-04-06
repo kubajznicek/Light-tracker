@@ -8,6 +8,12 @@ import random as rng
 import time
 
 def menuAkce (bod,barva,tloustka):
+    barva,tloustka=menuAkceInteral (bod,barva,tloustka)
+    menuAkceInteral (bod,barva,tloustka)
+    renderMenu ()
+    return barva,tloustka
+
+def menuAkceInteral (bod,barva,tloustka):
     if barva == cerna and tloustka > 3:
       tloustka=tloustka-3
     if bod[1] < 40:
