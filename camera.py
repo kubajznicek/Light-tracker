@@ -34,6 +34,12 @@ def menuAkceInteral (bod,barva,tloustka):
     if bod [1] < 375:
       if bod[1] > 325:
         return barva,2
+    if bod [1] > 300:                         # ulozeni z menu
+        if bod [1] < 330:
+            time.sleep (0.2)
+            if bod [1] > 300:
+                if bod [1] < 330:
+                  cv2.imwrite("Image.jpg", page)
     return barva,tloustka
 
 def renderMenu():
@@ -50,6 +56,11 @@ def renderMenu():
     for idx,c in enumerate([10,5,2]):
         cv2.line(menu, (10,450-odstup*idx),(40,450-odstup*idx),barva,thickness=c)
 
+    for idx,d in enumerate (cerna):
+        cv2.rectangle(menu,(10,300-odstup*idx),(40,330-odstup*idx),d,2)
+    
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    cv2.putText(menu,'s',(17,351),font,1,cerna,3)
 
 SVETLO = 730 # Spodni limit pro rozpoznani svetylka R+G+B
 
