@@ -51,7 +51,7 @@ def renderMenu():
         cv2.line(menu, (10,450-odstup*idx),(40,450-odstup*idx),barva,thickness=c)
 
 
-SVETLO = 760 # Spodni limit pro rozpoznani svetylka R+G+B
+SVETLO = 730 # Spodni limit pro rozpoznani svetylka R+G+B
 
 tloustka = 2
 cervena = (0,0,255)
@@ -64,8 +64,8 @@ barva = modra
 rng.seed(12345)
 OKNO = 'Kubovo kreslici svetelko'
 MAX=768
-cv2.namedWindow(OKNO, cv2.WND_PROP_FULLSCREEN)          
-cv2.setWindowProperty(OKNO, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)  # Cela obrazovka
+# cv2.namedWindow(OKNO, cv2.WND_PROP_FULLSCREEN)          
+# cv2.setWindowProperty(OKNO, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)  # Cela obrazovka
 cap = cv2.VideoCapture(0)
 _, _ = cap.read()
 cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 1)  # funguje
@@ -78,7 +78,7 @@ cam_y = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 print("Rozliseni kamery: {}x{}".format(cam_x, cam_y))
 print("Expozice: {}".format(cap.get(cv2.CAP_PROP_EXPOSURE)))
 page = np.zeros((cam_y, cam_x, 3), dtype=np.uint8)
-
+framePredchozi = np.zeros((cam_y, cam_x, 3), dtype=np.uint8)
 
 menu = np.zeros((cam_y, 50, 3), dtype=np.uint8)
 renderMenu ()
@@ -92,7 +92,6 @@ time.sleep(1.0)
 # cv2.rectangle(page,(0,0), (50,480), bila, thickness=49)
 # cv2.line(page,(50, 0),(50, 250),(255, 255, 255),100)
 predchozi = None
-scitanecPredchozi = None
 
 while(1):
 
@@ -102,12 +101,11 @@ while(1):
     lower = np.array([SVETLO])
     upper = np.array([MAX])
     frame = np.fliplr(frame) # zrcadli, aby to nebylo stranove prevracene
-    scitanec = np.sum(frame, axis=2, keepdims=True) # secti R+G+B
-    if scitanecPredchozi != None:
-        odcitanec = cv2.absdiff(scitanecPredchozi, scitanec)
-    scitanecPredchozi = scitanec
-    mask = cv2.inRange(odcitanec, lower, upper)
-    print("Nejsvetlejsi hodnota: {}".format(np.max(odcitanec)))
+    odcitanec = cv2.absdiff(framePredchozi, frame)
+    scitanec = np.sum(odcitanec, axis=2, keepdims=True) # secti R+G+B
+    framePredchozi = frame
+    mask = cv2.inRange(scitanec, lower, upper)
+    print("Nejsvetlejsi hodnota: {}".format(np.max(scitanec)))
     #print("Expozice: {}".format(cap.get(cv2.CAP_PROP_EXPOSURE)))
     # Najdi kontury
     canny_output = cv2.Canny(mask, threshold, MAX+1)     
@@ -145,16 +143,17 @@ while(1):
     # Prolni kameru a kresbu
     # res = cv2.bitwise_and(page, frame)
     res = cv2.addWeighted(frame, 0.5, page, 0.5, 0)
-    #cv2.imshow('frame',frame)
-    #cv2.imshow('mask',mask)
+    cv2.imshow('frame',odcitanec)
+    cv2.imshow('mask',mask)
 
     cv2.imshow(OKNO,res)
+    
 
     k = cv2.waitKey(5) & 0xFF
     if k == 27 or k == ord('q'):
         break
     if k == ord('s'):
-        cv2.imwrite("../../Desktop/Image.jpg", page)
+        cv2.imwrite("Image.jpg", odcitanec)
     #if k == ord('c'):
     if k == ord('r'):
         barva = cervena
