@@ -1,4 +1,4 @@
-# source bin/activate
+# source venv/bin/activate
 #  v4l2-ctl -d /dev/video0 --set-ctrl=exposure_auto=3
 
 import cv2
@@ -111,6 +111,7 @@ while(1):
     mask = cv2.inRange(scitanec, lower, upper)
     print("Nejsvetlejsi hodnota: {}".format(np.max(scitanec)))
     #print("Expozice: {}".format(cap.get(cv2.CAP_PROP_EXPOSURE)))
+
     # Najdi kontury
     canny_output = cv2.Canny(mask, threshold, MAX+1)     
     contours, _ = cv2.findContours(canny_output, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
@@ -149,11 +150,7 @@ while(1):
     page[:,:50]=menu
 
     # Prolni kameru a kresbu
-    # res = cv2.bitwise_and(page, frame)
     res = cv2.addWeighted(frame, 0.5, page, 0.5, 0)
-    #cv2.imshow('frame',odcitanec)
-    #cv2.imshow('mask',mask)
-
 
     #cv2.imshow('frame',frame)
     #cv2.imshow('mask',mask)
@@ -163,15 +160,22 @@ while(1):
     if k == 27 or k == ord('q'):
         break
     if k == ord('s'):
-        cv2.imwrite("../../Desktop/Image.jpg", page)
+        cv2.imwrite("../../../Desktop/Image.jpg", page) # ulozi to i s menu  cesta k souboru
     if k == ord('w'):
         barva = bila
+        renderMenu ()
     if k == ord('r'):
         barva = cervena
+        renderMenu ()
     if k == ord('b'): #xxxxxxxxxxxxxxxxxxxxxxxxx     pridat zbyle barvy
         barva = modra
+        renderMenu ()
     if k == ord('g'):
         barva = zelena
+        renderMenu ()
+    if k == ord('e'):
+        barva = cerna
+        renderMenu ()
     if k == ord('1'):
         tloustka = 2
     if k == ord('2'):
