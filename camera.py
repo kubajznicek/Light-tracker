@@ -1,11 +1,11 @@
 # source bin/activate
 #  v4l2-ctl -d /dev/video0 --set-ctrl=exposure_auto=3
 
-
 import cv2
 import numpy as np
 import random as rng
 import time
+
 
 def menuAkce (bod,barva,tloustka):
     barva,tloustka=menuAkceInteral (bod,barva,tloustka)
@@ -58,9 +58,11 @@ def renderMenu():
 
     for idx,d in enumerate (cerna):
         cv2.rectangle(menu,(10,300-odstup*idx),(40,330-odstup*idx),d,2)
-    
+
     font = cv2.FONT_HERSHEY_SIMPLEX
     cv2.putText(menu,'s',(17,351),font,1,cerna,3)
+
+
 
 SVETLO = 730 # Spodni limit pro rozpoznani svetylka R+G+B
 
@@ -75,33 +77,26 @@ barva = modra
 rng.seed(12345)
 OKNO = 'Kubovo kreslici svetelko'
 MAX=768
-# cv2.namedWindow(OKNO, cv2.WND_PROP_FULLSCREEN)          
-# cv2.setWindowProperty(OKNO, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)  # Cela obrazovka
+cv2.namedWindow(OKNO, cv2.WND_PROP_FULLSCREEN)          
+cv2.setWindowProperty(OKNO, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)  # Cela obrazovka
 cap = cv2.VideoCapture(0)
 _, _ = cap.read()
-cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 1)  # funguje
-cap.set(cv2.CAP_PROP_EXPOSURE, 200)  # funguje
+cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 1)  # nefunguje
+cap.set(cv2.CAP_PROP_EXPOSURE, 200)  # nefunguje
 cap.set(cv2.CAP_PROP_BRIGHTNESS, 0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-cam_x = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-cam_y = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+cam_x = 640 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+cam_y = 480
 print("Rozliseni kamery: {}x{}".format(cam_x, cam_y))
 print("Expozice: {}".format(cap.get(cv2.CAP_PROP_EXPOSURE)))
 page = np.zeros((cam_y, cam_x, 3), dtype=np.uint8)
-framePredchozi = np.zeros((cam_y, cam_x, 3), dtype=np.uint8)
+threshold = 100
+time.sleep(1.0)
 
 menu = np.zeros((cam_y, 50, 3), dtype=np.uint8)
 renderMenu ()
 
-
-threshold = 100
-time.sleep(1.0)
-
-# cv2.rectangle(page,(0,0), (50,480), cervena, thickness=-1)
-# obdelnik(page, (10,10),(20,20),cervena,-1)
-# cv2.rectangle(page,(0,0), (50,480), bila, thickness=49)
-# cv2.line(page,(50, 0),(50, 250),(255, 255, 255),100)
 predchozi = None
 
 while(1):
@@ -112,9 +107,7 @@ while(1):
     lower = np.array([SVETLO])
     upper = np.array([MAX])
     frame = np.fliplr(frame) # zrcadli, aby to nebylo stranove prevracene
-    odcitanec = cv2.absdiff(framePredchozi, frame)
-    scitanec = np.sum(odcitanec, axis=2, keepdims=True) # secti R+G+B
-    framePredchozi = frame
+    scitanec = np.sum(frame, axis=2, keepdims=True) # secti R+G+B 
     mask = cv2.inRange(scitanec, lower, upper)
     print("Nejsvetlejsi hodnota: {}".format(np.max(scitanec)))
     #print("Expozice: {}".format(cap.get(cv2.CAP_PROP_EXPOSURE)))
@@ -142,6 +135,9 @@ while(1):
     if bod == (0,0):
         predchozi = None
     else:
+        # Kresli caru
+        cv2.line(page,bod,bod,(barva),tloustka)
+
         if predchozi == None:
             predchozi = bod
         else:
@@ -151,24 +147,28 @@ while(1):
                 cv2.line(page, predchozi, bod,(barva),tloustka)
                 predchozi = bod
     page[:,:50]=menu
+
     # Prolni kameru a kresbu
     # res = cv2.bitwise_and(page, frame)
     res = cv2.addWeighted(frame, 0.5, page, 0.5, 0)
-    cv2.imshow('frame',odcitanec)
-    cv2.imshow('mask',mask)
+    #cv2.imshow('frame',odcitanec)
+    #cv2.imshow('mask',mask)
 
-    cv2.imshow(OKNO,res)
-    
+
+    #cv2.imshow('frame',frame)
+    #cv2.imshow('mask',mask)
+    cv2.imshow(OKNO,cv2.resize(res, (1920, 1080)))
 
     k = cv2.waitKey(5) & 0xFF
     if k == 27 or k == ord('q'):
         break
     if k == ord('s'):
-        cv2.imwrite("Image.jpg", odcitanec)
-    #if k == ord('c'):
+        cv2.imwrite("../../Desktop/Image.jpg", page)
+    if k == ord('w'):
+        barva = bila
     if k == ord('r'):
         barva = cervena
-    if k == ord('b'):
+    if k == ord('b'): #xxxxxxxxxxxxxxxxxxxxxxxxx     pridat zbyle barvy
         barva = modra
     if k == ord('g'):
         barva = zelena
