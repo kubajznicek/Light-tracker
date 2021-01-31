@@ -62,6 +62,8 @@ def renderMenu():
     font = cv2.FONT_HERSHEY_SIMPLEX
     cv2.putText(menu,'s',(17,351),font,1,cerna,3)
 
+    menu[174:200, 11:41] = guma
+
 
 
 SVETLO = 730 # Spodni limit pro rozpoznani svetylka R+G+B
@@ -73,6 +75,7 @@ zelena = (0,255,0)
 bila = (255,255,255)
 cerna = (0,0,0)
 barva = modra
+guma = cv2.imread('guma_scale.png',3)
 
 rng.seed(12345)
 OKNO = 'Kubovo kreslici svetelko'
@@ -155,6 +158,7 @@ while(1):
     #cv2.imshow('frame',frame)
     #cv2.imshow('mask',mask)
     cv2.imshow(OKNO,cv2.resize(res, (1920, 1080)))
+    #cv2.imshow(OKNO,res)
 
     k = cv2.waitKey(5) & 0xFF
     if k == 27 or k == ord('q'):
