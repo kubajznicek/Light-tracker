@@ -24,6 +24,8 @@ Yes, besides tracking light, you can:
 It’s a program, that is able to track the whitest colour in focused
 area.
 
+>You will need an LED light, see below.
+
 **Instalation**
 
 > Note for windows users: It is python, it should work but I haven’t tested it.
@@ -56,3 +58,50 @@ pip install opencv-python
 ```bash
 python3 camera.py
 ```
+
+***Usage***
+
+hotkeys
+
+- [ b ] blue
+- [ r ] red
+- [ g ] green
+- [ w ] white
+- [ c ] clear screen
+- [ e ] eraser
+- [ s ] save
+- [ 1 ] thickness 1
+- [ 2 ] thickness 2
+- [ 3 ] thickness 3
+
+Note: numbers don't work on numpad.
+
+***Camera resolution***
+
+Depending on what camera you have and what resolution it supports you can change it in the program. Open _camera.py_ and look for this code .
+```python
+resolution_x = 1280
+resolution_y = 720
+```
+> Recommended frame rate it at least 15 fps.
+
+***Troubleshooting***
+
+For correct light detection **camera shutter** needs to be set to low value and **auto exposure** must be turn off. Program does that but in case it didn't work you can set the values manualy using similar commands like this:
+```bash
+v4l2-ctl -d /dev/video0 --set-ctrl=exposure_auto=1
+v4l2-ctl -d /dev/video0 --set-ctrl=exposure_absolute=250
+```
+
+If it is not detecting your LED make sure that you are in a room with no **direct light**. Soft light is much better.
+
+***Hardware***
+
+Any basic LED light should work fine. For better funcionality you can optionally wrap protruding LED by a small paper cylinder.
+
+![simple LED light](https://zlepsovak.cz/1-large_default/led-klicenka-cerna.jpg "simple LED light")
+
+
+***Feedback***
+
+If you spot any bug or have an idea for improvment, please, crate github issue.

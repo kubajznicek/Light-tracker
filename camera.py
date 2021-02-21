@@ -6,6 +6,8 @@ import numpy as np
 import random as rng
 import time
 
+resolution_x = 1280
+resolution_y = 720
 
 def menuAkce (bod,barva,tloustka):
     barva,tloustka=menuAkceInteral (bod,barva,tloustka)
@@ -87,10 +89,10 @@ _, _ = cap.read()
 cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 1)  # nefunguje
 cap.set(cv2.CAP_PROP_EXPOSURE, 200)  # nefunguje
 cap.set(cv2.CAP_PROP_BRIGHTNESS, 0)
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-cam_x = 640 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-cam_y = 480
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, resolution_x)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, resolution_y)
+cam_x = resolution_x 
+cam_y = resolution_y
 print("Rozliseni kamery: {}x{}".format(cam_x, cam_y))
 print("Expozice: {}".format(cap.get(cv2.CAP_PROP_EXPOSURE)))
 page = np.zeros((cam_y, cam_x, 3), dtype=np.uint8)
