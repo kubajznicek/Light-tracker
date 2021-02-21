@@ -7,6 +7,8 @@
 You’ll get an ability to draw by hand without mouse. You just need to
 hold any LED light in front of your webcam.
 
+[![video preview](https://raw.githubusercontent.com/kubajznicek/Light-tracker/master/video-preview.png)](https://www.youtube.com/watch?v=xa3TuUxGWjk&feature=youtu.be)
+
 ***Are there any other features?***
 
 Yes, besides tracking light, you can:
